@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "title": "Read Reader"
   },
-  "host": "localhost:5000",
+  "host": "https://read-reader.herokuapp.com/",
   "basePath": "/",
   "securityDefinitions": {
     "bearerAuth": {
