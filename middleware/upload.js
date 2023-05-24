@@ -1,66 +1,53 @@
-const multer = require("multer");
+const Multer = require("multer");
 const { Storage } = require("@google-cloud/storage");
 
+const projectId = "readreader";
+const keyFilename = "../mykey.json";
+
 const googleStorage = new Storage({
-  keyFilename: "../readreader-aebdef56b5c6.json",
-  projectId: "readreader",
+  projectId,
+  keyFilename,
 });
 
 const bucketName = "prize-images";
 
 const bucket = googleStorage.bucket(bucketName);
 
-const isImage = (req, file, callback) => {
-  if (file.mimetype.startsWith("image")) {
-    callback(null, true);
-  } else {
-    callback(new Error("Only Images are Allowed..."));
-  }
-};
+// const isImage = (req, file, callback) => {
+//   if (file.mimetype.startsWith("image")) {
+//     callback(null, true);
+//   } else {
+//     callback(new Error("Only Images are Allowed..."));
+//   }
+// };
 
-const upload = multer({
-  storage: multer.memoryStorage(),
+const multer = Multer({
+  storage: Multer.memoryStorage(),
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB file size limit (adjust as needed)
+    fileSize: 5 * 1024 * 1024, // no larger than 5MB
   },
-  fileFilter: isImage,
+  // fileFilter: isImage,
 });
 
-exports.uploadImage = upload.single("prize_image");
+exports.uploadImage = multer.single("prize_image");
 
 exports.upload = (req, res, next) => {
-  if (!req.file) {
-    res.status(400).json({ error: "No file uploaded." });
-    return;
+  console.log("Made it to /upload");
+  try {
+    if (req.file) {
+      console.log("File found, trying to upload...");
+      const blob = bucket.file(req.file.originalname);
+      const blobStream = blob.createWriteStream();
+
+      blobStream.on("finish", () => {
+        res.status(200).send("Success");
+        console.log("Success");
+      });
+      blobStream.end(req.file.buffer);
+    } else throw "Error with image";
+  } catch (error) {
+    res.status(500).send(error);
   }
-  console.log(`file: ${JSON.stringify(req.file)}`);
-
-  const filename = `${Date.now()}_${req.file.originalname}`;
-  const file = bucket.file(filename);
-
-  const stream = file.createWriteStream({
-    metadata: {
-      contentType: req.file.mimetype,
-    },
-  });
-
-  stream.on("error", (err) => {
-    req.file.cloudStorageError = err;
-    next(err);
-  });
-
-  stream.on("finish", () => {
-    req.file.cloudStorageObject = filename;
-    req.file.cloudStoragePublicUrl = getPublicUrl(filename);
-    next();
-  });
-
-  stream.end(req.file.buffer);
-  console.log(`publicUrl: ${getPublicUrl(filename)}`);
-  res.status(200).json({
-    filename: filename,
-    publicUrl: req.file ? getPublicUrl(filename) : "",
-  });
 };
 
 // Helper function to get public URL of the uploaded file
