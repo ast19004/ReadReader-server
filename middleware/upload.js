@@ -43,11 +43,17 @@ exports.upload = (req, res, next) => {
       const blobStream = blob.createWriteStream();
 
       blobStream.on("finish", () => {
-        res.status(200).send("Success");
+        res.status(200).json({
+          filename: req.file.originalname,
+        });
         console.log("Success");
       });
       blobStream.end(req.file.buffer);
-    } else throw "Error with image";
+    } else {
+      res.status(200).json({
+        filename: null,
+      });
+    }
   } catch (error) {
     res.status(500).send(error);
   }
