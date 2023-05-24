@@ -3,7 +3,9 @@ const Multer = require("multer");
 const { Storage } = require("@google-cloud/storage");
 
 const projectId = "readreader";
-const keyFilename = path.join(__dirname + "/mykey.json");
+const keyFilename = path.join(
+  "/Users/alouisa/Desktop/ReadReader-server/mykey.json"
+);
 
 const googleStorage = new Storage({
   projectId,
