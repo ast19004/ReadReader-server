@@ -4,7 +4,7 @@ const { Storage } = require("@google-cloud/storage");
 
 const projectId = "readreader";
 const keyFilename = path.join(
-  `${__dirname}${process.env.GOOGLE_APPLICATION_CREDENTIALS}`
+  `../${process.env.GOOGLE_APPLICATION_CREDENTIALS}`
 );
 
 const googleStorage = new Storage({
