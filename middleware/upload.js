@@ -40,12 +40,17 @@ exports.upload = (req, res, next) => {
       const blob = bucket.file(req.file.originalname);
       const blobStream = blob.createWriteStream();
 
+      blobStream.on("error", (err) => {
+        console.error("Error uploading file:", err);
+      });
+
       blobStream.on("finish", () => {
         res.status(200).json({
           filename: req.file.originalname,
         });
         console.log("Success");
       });
+
       blobStream.end(req.file.buffer);
     } else {
       res.status(200).json({
@@ -53,7 +58,7 @@ exports.upload = (req, res, next) => {
       });
     }
   } catch (error) {
-    console.log(JSON.stringify(error));
+    console.log(`Error: ${error.msg}`);
     res.status(500).send(error);
   }
 };
