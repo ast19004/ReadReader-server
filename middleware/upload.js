@@ -37,7 +37,8 @@ exports.upload = (req, res, next) => {
   try {
     if (req.file) {
       console.log("File found, trying to upload...");
-      const blob = bucket.file(req.file.originalname);
+      const filename = `${Date.now()}_${req.file.originalname}`;
+      const blob = bucket.file(filename);
       const blobStream = blob.createWriteStream();
 
       blobStream.on("error", (err) => {
@@ -46,7 +47,7 @@ exports.upload = (req, res, next) => {
 
       blobStream.on("finish", () => {
         res.status(200).json({
-          filename: req.file.originalname,
+          filename: filename,
         });
         console.log("Success");
       });
