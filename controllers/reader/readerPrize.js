@@ -161,13 +161,15 @@ exports.getReaderPrize = async (req, res, next) => {
 
 /** Edit a reader prize in the Reader Prize database **/
 exports.putReaderPrize = async (req, res, next) => {
+  console.log("In putReaderPrize");
   const prizeId = req.params.prizeId;
   const updatedPrizeName = req.body.prize_name;
   const updatedReadingRequirement = req.body.reading_requirement;
   const updatedReaderIds = req.body.readers.map((id) => {
     return { readerId: id };
   });
-
+  const updatedPrizeImagePath = req.body.prize_image || "";
+  console.log(`updatedPrizeImagePath: ${updatedPrizeImagePath}`);
   try {
     const prize = await ReaderPrize.findById(prizeId)
       .where("creator_id")
@@ -182,6 +184,7 @@ exports.putReaderPrize = async (req, res, next) => {
     prize.prize_name = updatedPrizeName;
     prize.reading_requirement = updatedReadingRequirement;
     prize.readers = updatedReaderIds;
+    prize.prize_image = updatedPrizeImagePath;
 
     await prize.save();
 
@@ -189,10 +192,12 @@ exports.putReaderPrize = async (req, res, next) => {
       message: "Prize updated",
       updatedPrize: prize,
     });
+    console.log("prize updated");
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+    console.log(`Error : ${err.message}`);
     next(err);
   }
 };
