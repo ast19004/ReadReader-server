@@ -161,7 +161,6 @@ exports.getReaderPrize = async (req, res, next) => {
 
 /** Edit a reader prize in the Reader Prize database **/
 exports.putReaderPrize = async (req, res, next) => {
-  console.log("In putReaderPrize");
   const prizeId = req.params.prizeId;
   const updatedPrizeName = req.body.prize_name;
   const updatedReadingRequirement = req.body.reading_requirement;
@@ -169,7 +168,6 @@ exports.putReaderPrize = async (req, res, next) => {
     return { readerId: id };
   });
   const updatedPrizeImagePath = req.body.prize_image || "";
-  console.log(`updatedPrizeImagePath: ${updatedPrizeImagePath}`);
   try {
     const prize = await ReaderPrize.findById(prizeId)
       .where("creator_id")
@@ -192,7 +190,6 @@ exports.putReaderPrize = async (req, res, next) => {
       message: "Prize updated",
       updatedPrize: prize,
     });
-    console.log("prize updated");
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
