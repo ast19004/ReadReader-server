@@ -209,7 +209,7 @@ exports.deleteReaderPrize = async (req, res, next) => {
 /** Delete a reader prize from the reader prize list of a specified reader **/
 exports.deletePrizeFromReader = async (req, res, next) => {
   const readerId = req.params.readerId;
-  const prizeId = req.params.sessionId;
+  const prizeId = req.params.prizeId;
 
   try {
     const reader = await Reader.findById(readerId);
